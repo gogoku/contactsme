@@ -130,7 +130,7 @@ export default ({navigation}): React.ReactElement => {
               <Button
                 style={styles.signInButton}
                 appearance="ghost"
-                status="control"
+                status="basic"
                 size="giant"
                 accessoryLeft={ArrowForwardIconOutline}
                 onPress={onSignInButtonPress}>
