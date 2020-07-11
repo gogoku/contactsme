@@ -80,7 +80,6 @@ export default function App({navigation}) {
         dispatch({type: 'SIGN_IN', token: data.jwt});
       },
       signOut: async () => {
-        debugger;
         await AsyncStorage.removeItem('user');
         dispatch({type: 'SIGN_OUT'});
       },

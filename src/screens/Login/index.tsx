@@ -12,10 +12,12 @@ import {
 import {KeyboardAvoidingView} from './extra/3rd-party';
 import {loginApi} from '../../utils/api';
 import {AuthContext} from '../../index';
+import AlertBox from '../../components/Alert';
 
 export default ({navigation, authDispatch}): React.ReactElement => {
   const [email, setEmail] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
+  const [loginAlert, setLoginAlert] = React.useState<boolean>();
 
   const onSignInButtonPress = async (value): void => {
     const data = {
@@ -25,6 +27,7 @@ export default ({navigation, authDispatch}): React.ReactElement => {
     const result = await loginApi(data);
     const res = await AsyncStorage.getItem('user');
     if (result.error) {
+      showAlert();
     } else {
       value.signIn(result.response.data.data);
     }
@@ -34,9 +37,22 @@ export default ({navigation, authDispatch}): React.ReactElement => {
     navigation && navigation.navigate('SignUp');
   };
 
+  const hideAlert = (): void => {
+    setLoginAlert(false);
+  };
+
+  const showAlert = (): void => {
+    setLoginAlert(true);
+  };
+
   return (
     <KeyboardAvoidingView>
       <Layout style={styles.container}>
+        <AlertBox
+          visible={loginAlert}
+          title="Incorrect Username or Password"
+          onHide={hideAlert}
+        />
         <AuthContext.Consumer>
           {(value) => (
             <>

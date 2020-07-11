@@ -10,8 +10,7 @@ import {
   Text,
   useStyleSheet,
 } from '@ui-kitten/components';
-import AsyncStorage from '@react-native-community/async-storage';
-import {ImageOverlay} from './extra/image-overlay.component';
+import AlertBox from '../../components/Alert';
 import {
   ArrowForwardIconOutline,
   FacebookIcon,
@@ -31,10 +30,20 @@ export default ({navigation}): React.ReactElement => {
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
   const [errorState, setErrorState] = React.useState<boolean>({});
+  const [signupAlert, setsignupAlert] = React.useState<string>('');
 
   const styles = useStyleSheet(themedStyles);
 
+  const hideAlert = (): void => {
+    setsignupAlert(false);
+  };
+
+  const showAlert = (mess): void => {
+    setsignupAlert(mess);
+  };
+
   const onSignUpButtonPress = async (value): void => {
+    validateInput('', true);
     setLoading(true);
     let data = {
       first_name: firstName,
@@ -44,6 +53,11 @@ export default ({navigation}): React.ReactElement => {
     };
     const result = await signUpApi(data);
     if (result.error) {
+      if (result.err.response && result.err.response.status === 406) {
+        showAlert('User already exists please Sign In');
+      } else {
+        showAlert('Please verify the details entered');
+      }
     } else {
       value.signUp(result.response.data.data);
     }
@@ -61,32 +75,32 @@ export default ({navigation}): React.ReactElement => {
     return false;
   };
 
-  const validateInput = (name: string): void => {
+  const validateInput = (name: string, validateAll: boolean): void => {
     let currErrorState = {
       ...errorState,
     };
-    if (name === 'firstName') {
+    if (name === 'firstName' || validateAll) {
       if (firstName.length === 0) {
         currErrorState.firstName = true;
       } else {
         currErrorState.firstName = false;
       }
     }
-    if (name === 'lastName') {
+    if (name === 'lastName' || validateAll) {
       if (lastName.length === 0) {
         currErrorState.lastName = true;
       } else {
         currErrorState.lastName = false;
       }
     }
-    if (name === 'email') {
+    if (name === 'email' || validateAll) {
       if (!emailValidation(email)) {
         currErrorState.email = true;
       } else {
         currErrorState.email = false;
       }
     }
-    if (name === 'password') {
+    if (name === 'password' || validateAll) {
       if (password.length < 8) {
         currErrorState.password = true;
       } else {
@@ -98,6 +112,11 @@ export default ({navigation}): React.ReactElement => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
+      <AlertBox
+        visible={!!signupAlert}
+        title={signupAlert}
+        onHide={hideAlert}
+      />
       <AuthContext.Consumer>
         {(value) => (
           <>
@@ -179,6 +198,7 @@ export default ({navigation}): React.ReactElement => {
                 value={email}
                 onChangeText={setEmail}
                 status={errorState.email ? 'danger' : 'basic'}
+                caption={errorState.email ? 'Enter valid email' : ''}
                 onBlur={() => validateInput('email')}
               />
               <Input
