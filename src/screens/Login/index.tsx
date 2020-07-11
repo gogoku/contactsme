@@ -13,24 +13,27 @@ import {KeyboardAvoidingView} from './extra/3rd-party';
 import {loginApi} from '../../utils/api';
 import {AuthContext} from '../../index';
 import AlertBox from '../../components/Alert';
+import LoadingIndicator from '../../components/Spinner';
 
 export default ({navigation, authDispatch}): React.ReactElement => {
   const [email, setEmail] = React.useState<string>();
   const [password, setPassword] = React.useState<string>();
   const [loginAlert, setLoginAlert] = React.useState<boolean>();
+  const [isLoading, setLoading] = React.useState<boolean>(false);
 
   const onSignInButtonPress = async (value): void => {
+    setLoading(true);
     const data = {
       email,
       password,
     };
     const result = await loginApi(data);
-    const res = await AsyncStorage.getItem('user');
     if (result.error) {
       showAlert();
     } else {
       value.signIn(result.response.data.data);
     }
+    setLoading(false);
   };
 
   const onSignUpButtonPress = (): void => {
@@ -92,7 +95,9 @@ export default ({navigation, authDispatch}): React.ReactElement => {
               <Button
                 status="primary"
                 size="large"
-                onPress={() => onSignInButtonPress(value)}>
+                disabled={isLoading}
+                onPress={() => onSignInButtonPress(value)}
+                accessoryLeft={isLoading && LoadingIndicator}>
                 SIGN IN
               </Button>
               <View style={styles.socialAuthContainer}>

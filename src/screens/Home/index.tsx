@@ -20,6 +20,8 @@ import Slider from '@react-native-community/slider';
 import {useFocusEffect} from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 import {fetchContacts, addContact} from '../../utils/api';
+import AlertBox from '../../components/Alert';
+import LoadingIndicator from '../../components/Spinner';
 
 export const SearchIcon = (style: ImageStyle): IconElement => (
   <Icon {...style} name="search" />
@@ -30,15 +32,50 @@ export default ({navigation}): React.ReactElement => {
   const styles = useStyleSheet(themedStyles);
   const [searchQuery, setSearchQuery] = React.useState<string>();
   const [contactsList, setContacts] = React.useState<object>(null);
-  const [number, setNumber] = React.useState<string>();
-  const [name, setName] = React.useState<string>();
+  const [number, setNumber] = React.useState<string>('');
+  const [userName, setName] = React.useState<string>('');
   const [selectedRange, setSelectedRange] = React.useState<number>(5);
+  const [addAlert, setAddAlert] = React.useState<boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
+  const [errorState, setErrorState] = React.useState<boolean>({});
+
+  const hideAlert = (): void => {
+    setAddAlert(false);
+  };
+
+  const showAlert = (): void => {
+    setAddAlert(true);
+  };
+
+  const validateInput = (name: string, validateAll: boolean): void => {
+    let currErrorState = {
+      ...errorState,
+    };
+    debugger;
+    if (name === 'userName' || validateAll) {
+      if (userName.length === 0) {
+        currErrorState.userName = true;
+      } else {
+        currErrorState.userName = false;
+      }
+    }
+    if (name === 'number' || validateAll) {
+      if (number.length < 10) {
+        currErrorState.number = true;
+      } else {
+        currErrorState.number = false;
+      }
+    }
+    setErrorState(currErrorState);
+  };
 
   const onAddButtonPress = (): void => {
+    validateInput('', true);
+    setLoading(true);
     Geolocation.getCurrentPosition(
       async (position) => {
         const data = {
-          full_name: name,
+          full_name: userName,
           phone: number,
           location: {
             latitude: `${position.coords.latitude}`,
@@ -47,11 +84,15 @@ export default ({navigation}): React.ReactElement => {
         };
         const result = await addContact(data);
         if (result.error) {
+          showAlert();
         } else {
           getContactsList(selectedRange);
         }
+        setLoading(false);
       },
-      () => {},
+      () => {
+        setLoading(false);
+      },
       {enableHighAccuracy: true},
     );
   };
@@ -82,6 +123,11 @@ export default ({navigation}): React.ReactElement => {
 
   const renderHeader = (): React.ReactElement => (
     <Layout style={styles.header} level="1">
+      <AlertBox
+        visible={addAlert}
+        title="Failed to add contact, Please Try Again"
+        onHide={hideAlert}
+      />
       {/* <Input placeholder="Search" value={searchQuery} icon={SearchIcon} /> */}
       <Text>Date Range - Last {selectedRange} day</Text>
       <Slider
@@ -111,8 +157,10 @@ export default ({navigation}): React.ReactElement => {
         style={styles.input}
         label="Name"
         placeholder="Enter Name"
-        value={name}
+        value={userName}
         onChangeText={setName}
+        status={errorState.userName ? 'danger' : 'basic'}
+        onBlur={() => validateInput('userName', false)}
       />
       <Input
         style={styles.input}
@@ -122,9 +170,17 @@ export default ({navigation}): React.ReactElement => {
         maxLength={19}
         value={number}
         onChangeText={setNumber}
+        status={errorState.number ? 'danger' : 'basic'}
+        onBlur={() => validateInput('number', false)}
+        caption={'10 digit mobile number'}
       />
       <Divider />
-      <Button style={styles.addButton} size="giant" onPress={onAddButtonPress}>
+      <Button
+        style={styles.addButton}
+        size="giant"
+        accessoryRight={isLoading && LoadingIndicator}
+        disabled={isLoading}
+        onPress={onAddButtonPress}>
         ADD CONTACT
       </Button>
       <Divider />

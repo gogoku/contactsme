@@ -21,6 +21,7 @@ import {
 import {KeyboardAvoidingView} from './extra/3rd-party';
 import {signUpApi} from '../../utils/api';
 import {AuthContext} from '../../index';
+import LoadingIndicator from '../../components/Spinner';
 
 export default ({navigation}): React.ReactElement => {
   const [firstName, setFirstName] = React.useState<string>('');
@@ -224,7 +225,9 @@ export default ({navigation}): React.ReactElement => {
             <Button
               style={styles.signUpButton}
               size="large"
-              onPress={() => onSignUpButtonPress(value)}>
+              onPress={() => onSignUpButtonPress(value)}
+              accessoryLeft={isLoading && LoadingIndicator}
+              disabled={isLoading}>
               SIGN UP
             </Button>
           </>
