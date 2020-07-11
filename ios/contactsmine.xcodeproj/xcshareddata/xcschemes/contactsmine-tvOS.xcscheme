@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-               BuildableName = "contactsmine-tvOS.app"
-               BlueprintName = "contactsmine-tvOS"
-               ReferencedContainer = "container:contactsmine.xcodeproj">
+               BuildableName = "KnowYourContacts-tvOS.app"
+               BlueprintName = "KnowYourContacts-tvOS"
+               ReferencedContainer = "container:KnowYourContacts.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "contactsmine-tvOSTests.xctest"
-               BlueprintName = "contactsmine-tvOSTests"
-               ReferencedContainer = "container:contactsmine.xcodeproj">
+               BuildableName = "KnowYourContacts-tvOSTests.xctest"
+               BlueprintName = "KnowYourContacts-tvOSTests"
+               ReferencedContainer = "container:KnowYourContacts.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "contactsmine-tvOS.app"
-            BlueprintName = "contactsmine-tvOS"
-            ReferencedContainer = "container:contactsmine.xcodeproj">
+            BuildableName = "KnowYourContacts-tvOS.app"
+            BlueprintName = "KnowYourContacts-tvOS"
+            ReferencedContainer = "container:KnowYourContacts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "contactsmine-tvOS.app"
-            BlueprintName = "contactsmine-tvOS"
-            ReferencedContainer = "container:contactsmine.xcodeproj">
+            BuildableName = "KnowYourContacts-tvOS.app"
+            BlueprintName = "KnowYourContacts-tvOS"
+            ReferencedContainer = "container:KnowYourContacts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

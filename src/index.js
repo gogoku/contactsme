@@ -8,6 +8,7 @@ import * as eva from '@eva-design/eva';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
 import RootReducer from './reducers';
 import {AppIconsPack} from './app-icons-pack';
+import {setToken} from './utils/api';
 
 // const store = createStore(RootReducer);
 
@@ -18,12 +19,14 @@ export default function App({navigation}) {
     (prevState, action) => {
       switch (action.type) {
         case 'RESTORE_TOKEN':
+          setToken(action.token);
           return {
             ...prevState,
             userToken: action.token,
             isLoading: false,
           };
         case 'SIGN_IN':
+          setToken(action.token);
           return {
             ...prevState,
             isSignout: false,
@@ -50,7 +53,8 @@ export default function App({navigation}) {
       let userToken;
 
       try {
-        userToken = await AsyncStorage.getItem('user').jwt;
+        const user = await AsyncStorage.getItem('user');
+        userToken = user ? JSON.parse(user).jwt : null;
       } catch (e) {
         // Restoring token failed
       }
@@ -73,16 +77,20 @@ export default function App({navigation}) {
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
         await AsyncStorage.setItem('user', JSON.stringify(data));
-        dispatch({type: 'SIGN_IN', token: 'data.jwt'});
+        dispatch({type: 'SIGN_IN', token: data.jwt});
       },
-      signOut: () => dispatch({type: 'SIGN_OUT'}),
+      signOut: async () => {
+        debugger;
+        await AsyncStorage.removeItem('user');
+        dispatch({type: 'SIGN_OUT'});
+      },
       signUp: async (data) => {
         // In a production app, we need to send user data to server and get a token
         // We will also need to handle errors if sign up failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
         await AsyncStorage.setItem('user', JSON.stringify(data));
-        dispatch({type: 'SIGN_IN', token: 'data.jwt'});
+        dispatch({type: 'SIGN_IN', token: data.jwt});
       },
     }),
     [],

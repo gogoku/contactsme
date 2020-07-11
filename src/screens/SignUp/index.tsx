@@ -24,12 +24,13 @@ import {signUpApi} from '../../utils/api';
 import {AuthContext} from '../../index';
 
 export default ({navigation}): React.ReactElement => {
-  const [firstName, setFirstName] = React.useState<string>();
-  const [lastName, setLastName] = React.useState<string>();
-  const [email, setEmail] = React.useState<string>();
-  const [password, setPassword] = React.useState<string>();
+  const [firstName, setFirstName] = React.useState<string>('');
+  const [lastName, setLastName] = React.useState<string>('');
+  const [email, setEmail] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
+  const [errorState, setErrorState] = React.useState<boolean>({});
 
   const styles = useStyleSheet(themedStyles);
 
@@ -39,7 +40,7 @@ export default ({navigation}): React.ReactElement => {
       first_name: firstName,
       last_name: lastName,
       email: email,
-      password: password,
+      password,
     };
     const result = await signUpApi(data);
     if (result.error) {
@@ -53,29 +54,71 @@ export default ({navigation}): React.ReactElement => {
     navigation && navigation.navigate('Login');
   };
 
+  const emailValidation = (mail) => {
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)) {
+      return true;
+    }
+    return false;
+  };
+
+  const validateInput = (name: string): void => {
+    let currErrorState = {
+      ...errorState,
+    };
+    if (name === 'firstName') {
+      if (firstName.length === 0) {
+        currErrorState.firstName = true;
+      } else {
+        currErrorState.firstName = false;
+      }
+    }
+    if (name === 'lastName') {
+      if (lastName.length === 0) {
+        currErrorState.lastName = true;
+      } else {
+        currErrorState.lastName = false;
+      }
+    }
+    if (name === 'email') {
+      if (!emailValidation(email)) {
+        currErrorState.email = true;
+      } else {
+        currErrorState.email = false;
+      }
+    }
+    if (name === 'password') {
+      if (password.length < 8) {
+        currErrorState.password = true;
+      } else {
+        currErrorState.password = false;
+      }
+    }
+    setErrorState(currErrorState);
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <AuthContext.Consumer>
         {(value) => (
           <>
-            <ImageOverlay
+            {/* <ImageOverlay
               style={styles.headerContainer}
-              source={require('./assets/background.jpg')}>
-              <View style={styles.signUpContainer}>
-                <Text style={styles.signInLabel} category="h4" status="control">
-                  SIGN UP
-                </Text>
-                <Button
-                  style={styles.signInButton}
-                  appearance="ghost"
-                  status="control"
-                  size="giant"
-                  accessoryLeft={ArrowForwardIconOutline}
-                  onPress={onSignInButtonPress}>
-                  Sign In
-                </Button>
-              </View>
-            </ImageOverlay>
+              source={require('./assets/background.jpg')}> */}
+            <View style={styles.signUpContainer}>
+              <Text style={styles.signInLabel} category="h4" status="control">
+                SIGN UP
+              </Text>
+              <Button
+                style={styles.signInButton}
+                appearance="ghost"
+                status="control"
+                size="giant"
+                accessoryLeft={ArrowForwardIconOutline}
+                onPress={onSignInButtonPress}>
+                Sign In
+              </Button>
+            </View>
+            {/* </ImageOverlay> */}
             <View style={styles.socialAuthContainer}>
               <Text style={styles.socialAuthHintText}>
                 Sign with a social account
@@ -115,7 +158,9 @@ export default ({navigation}): React.ReactElement => {
                 label="NAME"
                 autoCapitalize="words"
                 value={firstName}
+                status={errorState.firstName ? 'danger' : 'basic'}
                 onChangeText={setFirstName}
+                onBlur={() => validateInput('firstName')}
               />
               <Input
                 style={styles.formInput}
@@ -124,6 +169,8 @@ export default ({navigation}): React.ReactElement => {
                 autoCapitalize="words"
                 value={lastName}
                 onChangeText={setLastName}
+                status={errorState.lastName ? 'danger' : 'basic'}
+                onBlur={() => validateInput('lastName')}
               />
               <Input
                 style={styles.formInput}
@@ -131,6 +178,8 @@ export default ({navigation}): React.ReactElement => {
                 label="EMAIL"
                 value={email}
                 onChangeText={setEmail}
+                status={errorState.email ? 'danger' : 'basic'}
+                onBlur={() => validateInput('email')}
               />
               <Input
                 style={styles.formInput}
@@ -139,6 +188,9 @@ export default ({navigation}): React.ReactElement => {
                 secureTextEntry={true}
                 value={password}
                 onChangeText={setPassword}
+                status={errorState.password ? 'danger' : 'basic'}
+                caption={'Should contain at least 8 characters'}
+                onBlur={() => validateInput('password')}
               />
               <CheckBox
                 style={styles.termsCheckBox}
@@ -176,7 +228,6 @@ const themedStyles = StyleService.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 32,
   },
   socialAuthContainer: {
     marginTop: 24,

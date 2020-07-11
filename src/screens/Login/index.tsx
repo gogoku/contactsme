@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Button, Input, Text} from '@ui-kitten/components';
+import {Button, Input, Text, Layout} from '@ui-kitten/components';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ImageOverlay} from './extra/image-overlay.component';
 import {
@@ -24,8 +24,6 @@ export default ({navigation, authDispatch}): React.ReactElement => {
     };
     const result = await loginApi(data);
     const res = await AsyncStorage.getItem('user');
-    console.log(res);
-    debugger;
     if (result.error) {
     } else {
       value.signIn(result.response.data.data);
@@ -36,25 +34,24 @@ export default ({navigation, authDispatch}): React.ReactElement => {
     navigation && navigation.navigate('SignUp');
   };
 
-  console.log(navigation, authDispatch);
-
   return (
     <KeyboardAvoidingView>
-      <AuthContext.Consumer>
-        {(value) => (
-          <>
-            <ImageOverlay
+      <Layout style={styles.container}>
+        <AuthContext.Consumer>
+          {(value) => (
+            <>
+              {/* <ImageOverlay
               style={styles.container}
-              source={require('./assets/background.jpg')}>
+              source={require('./assets/background.jpg')}> */}
               <View style={styles.signInContainer}>
-                <Text style={styles.signInLabel} status="control" category="h4">
+                <Text style={styles.signInLabel} category="h4">
                   SIGN IN
                 </Text>
                 <Button
                   style={styles.signUpButton}
                   appearance="ghost"
-                  status="control"
                   size="giant"
+                  status="basic"
                   accessoryLeft={ArrowForwardIcon}
                   onPress={onSignUpButtonPress}>
                   Sign Up
@@ -64,7 +61,6 @@ export default ({navigation, authDispatch}): React.ReactElement => {
                 <Input
                   label="EMAIL"
                   placeholder="Email"
-                  status="control"
                   value={email}
                   onChangeText={setEmail}
                 />
@@ -73,46 +69,43 @@ export default ({navigation, authDispatch}): React.ReactElement => {
                   secureTextEntry={true}
                   placeholder="Password"
                   label="PASSWORD"
-                  status="control"
                   value={password}
                   onChangeText={setPassword}
                 />
               </View>
               <Button
-                status="control"
+                status="primary"
                 size="large"
                 onPress={() => onSignInButtonPress(value)}>
                 SIGN IN
               </Button>
               <View style={styles.socialAuthContainer}>
-                <Text style={styles.socialAuthHintText} status="control">
+                <Text style={styles.socialAuthHintText}>
                   Sign with a social account
                 </Text>
                 <View style={styles.socialAuthButtonsContainer}>
                   <Button
                     appearance="ghost"
                     size="giant"
-                    status="control"
                     accessoryLeft={GoogleIcon}
                   />
                   <Button
                     appearance="ghost"
                     size="giant"
-                    status="control"
                     accessoryLeft={FacebookIcon}
                   />
                   <Button
                     appearance="ghost"
                     size="giant"
-                    status="control"
                     accessoryLeft={TwitterIcon}
                   />
                 </View>
               </View>
-            </ImageOverlay>
-          </>
-        )}
-      </AuthContext.Consumer>
+              {/* </ImageOverlay> */}
+            </>
+          )}
+        </AuthContext.Consumer>
+      </Layout>
     </KeyboardAvoidingView>
   );
 };
